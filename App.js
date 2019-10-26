@@ -26,6 +26,30 @@ export default class App extends Component {
     firebase.initializeApp(firebaseConfig);
     //firebase.analytics();
 
+    //convencao snapshot
+    /*
+     ON = Adiciona um listener, qualquer alteracao no firebase ele já atualiza
+    firebase.database().ref("cliente").on('value', (snapshot) => {
+      let state = this.state;
+      state.cliente = snapshot.val();
+      this.setState(state);
+    });
+    */
+   firebase.database().ref("usuarios/1/idade").on('value', (snapshot) => {
+    let state = this.state;
+    state.cliente = snapshot.val();
+    this.setState(state);
+  });
+
+    /*
+     * ONCE = Busca só uma vez no firebase e já atualiza
+      firebase.database().ref("cliente").once('value', (snapshot) => {
+        let state = this.state;
+        state.cliente = snapshot.val();
+        this.setState(state);
+      });
+      */
+
   }
 
   render() {
