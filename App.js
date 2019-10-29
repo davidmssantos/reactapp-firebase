@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View, TextInput, Button} from 'react-native';
 import firebase from 'firebase';
 
 export default class App extends Component {
@@ -7,10 +7,12 @@ export default class App extends Component {
   constructor(props){
     super(props);
     this.state = {
-      cliente : 'Carregando..'
-
+      nome: '',
+      cargo: '' 
     }
     
+    this.cadastrarFuncionario = this.cadastrarFuncionario.bind(this);
+
     // Your web app's Firebase configuration
     let firebaseConfig = {
       apiKey: "AIzaSyCYcmMz6c902kY6YKeQTtIXO1WecBW2LJY",
@@ -24,38 +26,55 @@ export default class App extends Component {
     };
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
-    //firebase.analytics();
+    
 
-    //convencao snapshot
-    /*
-     ON = Adiciona um listener, qualquer alteracao no firebase ele já atualiza
-    firebase.database().ref("cliente").on('value', (snapshot) => {
-      let state = this.state;
-      state.cliente = snapshot.val();
-      this.setState(state);
-    });
-    */
-   firebase.database().ref("usuarios/1/idade").on('value', (snapshot) => {
-    let state = this.state;
-    state.cliente = snapshot.val();
-    this.setState(state);
-  });
+    // Criar um nó
+    // firebase.database().ref('tipo').set('Cliente');
 
-    /*
-     * ONCE = Busca só uma vez no firebase e já atualiza
-      firebase.database().ref("cliente").once('value', (snapshot) => {
-        let state = this.state;
-        state.cliente = snapshot.val();
-        this.setState(state);
+    //alterando um dado no firebase
+    // firebase.database().ref('usuarios').child(2).child('nome').set('Justai');
+    // firebase.database().ref('usuarios').child(2).child('idade').set(33);
+
+    //Alterando com uma chave diferente
+    // let id = '-LsOrWQUP_Z0QK4VxVpm'; 
+    // firebase.database().ref('usuarios').child(id).set({
+    //   nome: 'Jose Jose',
+    //   cargo: 'Administrativo'
+    // });
+
+    //deletando um usuario
+    // firebase.database().ref('usuarios').child(2).remove();
+
+    firebase.database().ref('tipo').remove();
+  }
+
+  cadastrarFuncionario(){
+    if(this.state.nome != '' && this.state.cargo != ''){
+      
+      let usuarios = firebase.database().ref('usuarios');
+      let chave = usuarios.push().key;
+
+      usuarios.child(chave).set({
+        nome: this.state.nome,
+        cargo: this.state.cargo
       });
-      */
 
+      alert('Cadastrado com Sucesso!');
+    }
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <Text style={{paddingTop: 20, fontSize: 25}}>Olá {this.state.cliente}</Text>
+        <Text style={styles.texto}>Nome</Text>
+        <TextInput underlineColorAndroid="transparent" style={styles.input}
+              onChangeText={(nome) => {this.setState({nome})}}></TextInput>
+
+        <Text style={styles.texto}>Cargo</Text>
+        <TextInput underlineColorAndroid="transparent" style={styles.input}
+              onChangeText={(cargo) => {this.setState({cargo})}}></TextInput>
+
+        <Button title="Novo Funcionario" onPress={this.cadastrarFuncionario}></Button>
       </View>
     );
   }
@@ -63,6 +82,16 @@ export default class App extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    padding: 20
+  },
+  texto:{
+    fontSize: 20
+  }, 
+  input:{
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#000000',
+    height: 40
   }
 });
