@@ -11,18 +11,32 @@ export default class App extends Component {
       senha: ''
     }
 
-    this.cadastrar = this.cadastrar.bind(this);
+    this.logar = this.logar.bind(this);
+    this.sair = this.sair.bind(this);
     
+    firebase.auth().onAuthStateChanged((user)=>{
+      if(user){
+        alert('Usuário Logado com Sucesso!');
+      }
+      // else{
+      //   alert('Usuário Deslogado!');
+      // }
+    })
   }
 
-  cadastrar(){
-    firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.senha)
-    .catch((error) =>{
-      if(error.code == 'auth/weak-password'){
-        alert('Sua senha deve ter pelo menos 6 caracteres');
-      }
-      if(error.code == 'auth/invalid-email'){
-        alert('Email invalido');
+  sair(){
+    firebase.auth().signOut();
+    alert('Deslogado com Sucesso!');
+  }
+
+  logar(){
+   
+    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.senha)
+    .catch((error) => {
+      if(error.code == 'auth/wrong-password'){
+        alert('Senha incorreta');
+      }else{
+        alert('Ops, tente novamente mais tarde!');
       }
     })
   }
@@ -30,13 +44,17 @@ export default class App extends Component {
   render() {
     return (
       <View style={styles.container}>
+          <Text style={{fontSize: 30, textAlign: 'center'}}>Entrar</Text>
           <TextInput style={styles.input} placeholder="Email" underlineColorAndroid="transparent"
                   onChangeText={(email) => {this.setState({email})}}></TextInput>
 
           <TextInput secureTextEntry={true} style={styles.input} placeholder="Senha" underlineColorAndroid="transparent"
                   onChangeText={(senha) => {this.setState({senha})}}></TextInput>
 
-          <Button title="Cadastrar" onPress={this.cadastrar}></Button>
+          <Button title="Entrar" onPress={this.logar}></Button>
+
+          <Button title="Logout" onPress={this.sair}></Button>
+
       </View>
     );
   }
